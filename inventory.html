@@ -1,0 +1,118 @@
+<!-- 
+	Site to access the inventory. Shows a list of all categories on the left from which the user can select one 
+	category at a time. The available products from that category are shown on the right.
+	TODO: consider adding a search field.
+
+	@author vera
+ -->
+<!DOCTYPE html>
+<head>
+<title>Inventory - Bushwick Food Coop</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="inventory.css" rel="stylesheet" type="text/css">
+<link rel="shortcut icon" href="http://bushwickfoodcoop.org/wp-content/themes/bushwick-food-coop/img/favicon.ico">
+
+<script>
+$(document).ready(function() {
+	// TODO: Load the whole pricelist once and then filter local.
+	// Request the priecelist for the selected category from the server
+	function getPriceList() {
+		selected_categories = getSelectedCategories()
+    	$.post("inventory_get_pricelist.php", {
+     	    category: selected_categories,
+		}, function(data, status) {
+			// Clear the prior result and populate with new data.
+			$('items').empty()
+        	foods = $.parseJSON(data);
+        	// Loop over the price list and print one row per item.
+			$.each(foods, function (i, value) {
+				category = $('itemheader itemrow').clone().appendTo($('items')).addClass('divider')
+				category.find('itemname').html(value['category'])
+				
+				items = value['items'];
+				for (i = 0; i < items.length; i++){
+					o = $('itemheader itemrow').clone().appendTo($('items'))
+					n = items[i].name.split("\/")
+					o.find('itemname').html(n[0] + "<subinfo>" + n[1] + "<subinfo>")
+					o.find('itemprice.p1').html(items[i].member_price)
+					o.find('itemprice.p2').html(items[i].nonmember_price)
+				}
+			});
+    	});
+    }
+
+	// When the DOM is ready, load all the categories from the database and populate the 
+	// right sidebar with the returned data.
+	$.post("inventory_get_categories.php", {
+	},
+	function(data, status) {
+		categories = $.parseJSON(data);
+		$.each(categories, function (i, value) {
+  			o = $('<category>').appendTo($('left')).html(value['name'])
+  			o.attr('id',  value['id'])
+			o.mousedown(function(){
+				$('category').removeClass('selected')
+				$(this).addClass('selected')
+				getPriceList()
+			})
+
+			// Select the first category as a default.
+			if (i == 0) {
+				o.addClass('selected')
+				getPriceList()
+			}
+		});
+	});
+    
+    // Loop over all the categories and return an array with all the selected ones.
+    // At the moment there should only ever be one item in this array.
+    // TODO: consider allowing selection of multiple categories at the same time.
+	function getSelectedCategories(){
+		categories = $('category.selected')
+		categories_array = []
+		
+		$.each(categories, function(i,value){
+			categories_array.push(value.id)
+		})
+
+		return categories_array
+	}
+})
+</script>
+</head>
+
+<body>
+
+<main>
+	<left>
+		<div class="header">
+			<div class="logoimage">
+				<a href="http://bushwickfoodcoop.org">
+				<object class="logo" style="width: 100%" 
+					type="image/svg+xml" 
+					data="http://bushwickfoodcoop.org/wp-content/themes/bushwick-food-coop/img/Bushwick-Food-Cooperative-logo.svg">
+				</object>
+				</a>
+				<h1>Inventory</h1>
+			</div>
+		</div>
+	</left>
+	<right>
+		<items>
+		</items>
+	</right>
+	
+	
+	<hidden>
+	<itemheader>
+		<itemrow>
+			<itemname> </itemname>
+			<itemprice class="p1">Members</itemprice>
+			<itemprice class="p2">Non-members</itemprice>
+		</itemrow>
+	</itemheader>
+	</hidden>
+</main>
+
+</body>
+</html>

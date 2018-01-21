@@ -32,8 +32,11 @@ $(document).ready(function() {
 				items = value['items'];
 				for (i = 0; i < items.length; i++){
 					o = $('itemheader itemrow').clone().appendTo($('items'))
-					n = items[i].name.split("\/")
-					o.find('itemname').html(n[0] + "<subinfo>" + n[1] + "<subinfo>")
+
+                    name = items[i].name.substr(0, items[i].name.indexOf("\/")); 
+                    subInfo = items[i].name.substr(items[i].name.indexOf("\/") + 1);
+
+					o.find('itemname').html(name + "<subinfo>" + subInfo + "<subinfo>")
 					o.find('itemprice.p1').html(items[i].member_price)
 					o.find('itemprice.p2').html(items[i].nonmember_price)
 				}
@@ -88,10 +91,7 @@ $(document).ready(function() {
 		<div class="header">
 			<div class="logoimage">
 				<a href="http://bushwickfoodcoop.org">
-				<object class="logo" style="width: 100%" 
-					type="image/svg+xml" 
-					data="http://bushwickfoodcoop.org/wp-content/themes/bushwick-food-coop/img/Bushwick-Food-Cooperative-logo.svg">
-				</object>
+				<img src="//static1.squarespace.com/static/5a54f5ccd74cff1c818ca40e/t/5a5fbea28165f51098cc9953/1516513105858/?format=100w">
 				</a>
 				<h1>Inventory</h1>
 			</div>

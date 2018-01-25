@@ -40,6 +40,20 @@ body {
 	font-size: 150%;
 }
 
+/* The search field. */
+.header input {
+	display: inline-block !important;
+	font-size: 120%;
+	background-image: url('inventory_searchicon.png'); 
+    background-position: 10px 12px; 
+    background-repeat: no-repeat; 
+    width: 100%; /* Full-width */
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px; 
+    box-sizing: border-box;
+}
+
 .logoimage {
 	width: 200px;
 	display: inline-block;
@@ -103,8 +117,12 @@ right itemrow {
 	padding: 1vmin 0px;
 }
 
-right itemrow:nth-child(even){
+right itemrow:nth-child(even) {
 	background: #f4f7fa
+}
+
+allitems {
+	display: none;
 }
 
 right itemrow itemname{
@@ -118,23 +136,31 @@ right itemrow itemname subinfo {
 	opacity: .5;
 }
 
+right itemrow itemname subinfo a:link, 
+right itemrow itemname subinfo a:visited,
+right itemrow itemname subinfo a:hover,
+right itemrow itemname subinfo a:active {
+	color: #000;
+	text-decoration: none;
+}
+
 right itemrow itemprice {
 	flex: 1;
 	text-align: right;
 	padding: 0px 8px;
 }
 
-right itemrow.divider itemname {
+right itemrow.headline itemname {
 	font-size: 180%;
 }
 
-right itemrow.divider {
+right itemrow.headline {
 	margin-top: 50px;
 	background: none;
 	padding: 20px 0px;
 }
 
-right itemrow.divider:first-child {
+right itemrow.headline:first-child {
 	margin-top:  0px;
 }
 

@@ -1,85 +1,165 @@
-<!-- 
-	Site to access the inventory. Shows a list of all categories on the left from which the user can select one 
-	category at a time. The available products from that category are shown on the right.
-	TODO: consider adding a search field.
-
-	@author vera
- -->
 <!DOCTYPE html>
 <head>
 <title>Inventory - Bushwick Food Coop</title>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="inventory.css" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" href="http://bushwickfoodcoop.org/wp-content/themes/bushwick-food-coop/img/favicon.ico">
-
 <script>
-$(document).ready(function() {
-	// TODO: Load the whole pricelist once and then filter local.
-	// Request the priecelist for the selected category from the server
-	function getPriceList() {
-		selected_categories = getSelectedCategories()
-    	$.post("inventory_get_pricelist.php", {
-     	    category: selected_categories,
-		}, function(data, status) {
-			// Clear the prior result and populate with new data.
-			$('items').empty()
-        	foods = $.parseJSON(data);
-        	// Loop over the price list and print one row per item.
-			$.each(foods, function (i, value) {
-				category = $('itemheader itemrow').clone().appendTo($('items')).addClass('divider')
-				category.find('itemname').html(value['category'])
-				
-				items = value['items'];
-				for (i = 0; i < items.length; i++){
-					o = $('itemheader itemrow').clone().appendTo($('items'))
 
-                    name = items[i].name.substr(0, items[i].name.indexOf("\/")); 
-                    subInfo = items[i].name.substr(items[i].name.indexOf("\/") + 1);
+// The general structure is a list of categories on the left and a list of products on the right.
+// We load all products when the page is loaded and add them to a hidden container ("allitems").
+// When a category is selected or the user searches, we add the matching rows to the visible container 
+// ("items"). This allows us to keep the alternating background colors functioning. 
 
-					o.find('itemname').html(name + "<subinfo>" + subInfo + "<subinfo>")
-					o.find('itemprice.p1').html(items[i].member_price)
-					o.find('itemprice.p2').html(items[i].nonmember_price)
-				}
-			});
-    	});
+
+// Called when the user types into the search field. 
+// Gets reset when the user clicks on a category.
+function search() {
+    input = $('#searchfield')[0].value.toUpperCase()
+
+    if (input == "") {
+    	categoryclick($('category:first'))
+    	return
     }
 
-	// When the DOM is ready, load all the categories from the database and populate the 
-	// right sidebar with the returned data.
+    // Move all rows but the headline to the hidden "allitems" container.
+	$('itemrow').not('.headline').appendTo('allitems')
+
+	// Remove any highlight from the category list.
+	$('category').removeClass('selected')
+
+	// Loop over all products and move the matching ones to the visible "items" container.
+	$('itemrow').each(function( index ) {
+  		product_name = $(this).find('itemname').text().toUpperCase()
+  		if (product_name.toUpperCase().indexOf(input) > -1) {
+  			$(this).appendTo('items')
+  		} 
+	})
+
+	// Update the headline with the current search term.
+	$('itemrow.headline').find('itemname').html("Search for " + input)
+}
+
+// Called when the user clicks on a category.
+var categoryclick = function(categoryrow) {
+	// Reset the search field
+	$('#searchfield')[0].value = ""
+
+	// Highlight none but the selected category.
+	$('category').removeClass('selected')
+	categoryrow.addClass('selected')
+
+	// Move all rows but the headline to the hidden "allitems" container.
+	$('itemrow').not('.headline').appendTo('allitems')
+
+	// Move all matching rows into the visible "items" container.
+	$("[category_id = " + categoryrow.attr('id') + "]").appendTo('items')
+
+	// Update the headline with the selected category.
+	$('itemrow.headline').find('itemname').html(categoryrow.text())
+}
+
+// Called when the DOM is ready. Loads all food items from the database.
+var loadfooditems = function() {
+	$.post("inventory_get_all_items.php", {
+	},
+	function(data, status) {
+    	$('items').empty()
+    	foods = $.parseJSON(data);
+    	
+    	// Create the headline row.
+    	category = $('itemheader itemrow').clone().appendTo($('items')).addClass('headline')
+
+		// Loop over the food items and add one row per item.
+		$.each(foods, function (i, value) {
+			// Add one row per item to the hidden "allitems" container.
+			o = $('itemheader itemrow').clone().appendTo($('allitems'))
+			// Set the category id as an attribute.
+			o.attr('category_id',  foods[i].category_id)
+
+			// Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
+			name = foods[i].name
+			subInfo = ""
+			if (foods[i].name.indexOf("\/") > -1) {
+				name = foods[i].name.substr(0, foods[i].name.indexOf("\/")); 
+            	subInfo = foods[i].name.substr(foods[i].name.indexOf("\/") + 1);
+			}
+
+			if (name == "") {
+				console.log(foods[i])
+			}
+
+			if (name.indexOf("BY WEIGHT") > -1) {
+				name = name.replace("BY WEIGHT", "by weight")
+			} 
+
+			if (name.indexOf("BY EACH") > -1) {
+				name = name.replace("BY EACH", "by each")
+			}  
+
+			if (subInfo.indexOf("ORG") > -1) {
+				subInfo = subInfo.replace("ORG", "organic")
+			}
+
+			if (subInfo.indexOf("GF") > -1) {
+				subInfo = subInfo.replace("GF", "gluten free")
+			}  
+
+			if (subInfo.indexOf("LFFC") > -1) {
+				subInfo = subInfo.replace("LFFC", "<a target=\"_blank\" href=\"https://www.lancasterfarmfresh.com\">Lancaster Farm Fresh Coop</a>")
+			} else if (subInfo.indexOf("MYVT") > -1) {
+				subInfo = subInfo.replace("MYVT", "<a target=\"_blank\" href=\"http://www.myersproduce.com\">Myers Produce</a>")
+			} else if (subInfo.indexOf("Stryker Farm") > -1) {
+				subInfo = subInfo.replace("Stryker Farm", "<a target=\"_blank\" href=\"https://www.strykerfarm.com\">Stryker Farm</a>")
+			} else if (subInfo.indexOf("Sunbeam") > -1) {
+				subInfo = subInfo.replace("Sunbeam", "<a target=\"_blank\" href=\"https://sunbeamcandles.com\">Sunbeam</a>")
+			} else if (subInfo.indexOf("Frontier") > -1) {
+				subInfo = subInfo.replace("Frontier", "<a target=\"_blank\" href=\"https://www.frontiercoop.com\">Frontier</a>")
+			} else if (subInfo.indexOf("Equal Exchange") > -1) {
+				subInfo = subInfo.replace("Equal Exchange", "<a target=\"_blank\" href=\"http://equalexchange.coop\">Equal Exchange</a>")
+			} else if (subInfo.indexOf("Bread Alone") > -1) {
+				subInfo = subInfo.replace("Bread Alone", "<a target=\"_blank\" href=\"https://www.breadalone.com\">Bread Alone</a>")
+			} else if (subInfo.indexOf("Inti") > -1) {
+				subInfo = subInfo.replace("Inti", "<a target=\"_blank\" href=\"http://www.theintigroup.com\">Inti</a>")
+			} else if (subInfo.indexOf("Hot Bread Kitchen") > -1) {
+				subInfo = subInfo.replace("Hot Bread Kitchen", "<a target=\"_blank\" href=\"https://hotbreadkitchen.org\">Hot Bread Kitchen</a>")
+			}				
+
+			// Set the subinfo and prices.
+			o.find('itemname').html(name + "<subinfo>" + subInfo + "<subinfo>")
+			o.find('itemprice.p1').html(foods[i].member_price)
+			o.find('itemprice.p2').html(foods[i].nonmember_price)
+		})
+
+		// Select the first category as a default on load.
+		categoryclick($('category:first'))
+	});
+}
+
+// Called when the DOM is ready. Loads all categories from the database.
+var loadcategories = function() {
 	$.post("inventory_get_categories.php", {
 	},
 	function(data, status) {
 		categories = $.parseJSON(data);
 		$.each(categories, function (i, value) {
-  			o = $('<category>').appendTo($('left')).html(value['name'])
-  			o.attr('id',  value['id'])
-			o.mousedown(function(){
-				$('category').removeClass('selected')
-				$(this).addClass('selected')
-				getPriceList()
-			})
-
-			// Select the first category as a default.
-			if (i == 0) {
-				o.addClass('selected')
-				getPriceList()
-			}
+  			cat = $('<category>').appendTo($('left')).html(value['name'])
+  			cat.attr('id',  value['id'])
+			cat.mousedown(function() {
+    			categoryclick($(this))
+			});
 		});
 	});
-    
-    // Loop over all the categories and return an array with all the selected ones.
-    // At the moment there should only ever be one item in this array.
-    // TODO: consider allowing selection of multiple categories at the same time.
-	function getSelectedCategories(){
-		categories = $('category.selected')
-		categories_array = []
-		
-		$.each(categories, function(i,value){
-			categories_array.push(value.id)
-		})
+}
 
-		return categories_array
-	}
+$(document).ready(function() {
+	// Load all the categories from the database and populate the 
+	// right sidebar with the returned data.
+	loadcategories()
+
+	// Load all the items from the database.
+	loadfooditems()
 })
 </script>
 </head>
@@ -95,11 +175,14 @@ $(document).ready(function() {
 				</a>
 				<h1>Inventory</h1>
 			</div>
+			<input type="text" id="searchfield" onkeyup="search()" placeholder="Search for products...">
 		</div>
 	</left>
 	<right>
 		<items>
 		</items>
+		<allitems>
+		</allitems>
 	</right>
 	
 	

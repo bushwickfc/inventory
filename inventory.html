@@ -86,10 +86,6 @@ var loadfooditems = function() {
             	subInfo = foods[i].name.substr(foods[i].name.indexOf("\/") + 1);
 			}
 
-			if (name == "") {
-				console.log(foods[i])
-			}
-
 			if (name.indexOf("BY WEIGHT") > -1) {
 				name = name.replace("BY WEIGHT", "by weight")
 			} 
@@ -97,6 +93,12 @@ var loadfooditems = function() {
 			if (name.indexOf("BY EACH") > -1) {
 				name = name.replace("BY EACH", "by each")
 			}  
+
+			if (name.indexOf("BY FLUID OZ") > -1) {
+				name = name.replace("BY FLUID OZ", "by fluid oz")
+			} else if(name.indexOf("BY FL OZ") > -1) {
+				name = name.replace("BY FL OZ", "by fluid oz")
+			}
 
 			if (subInfo.indexOf("ORG") > -1) {
 				subInfo = subInfo.replace("ORG", "organic")
@@ -106,10 +108,14 @@ var loadfooditems = function() {
 				subInfo = subInfo.replace("GF", "gluten free")
 			}  
 
-			if (subInfo.indexOf("LFFC") > -1) {
+			if (subInfo.indexOf("RA") > -1) {
+				subInfo = subInfo.replace("RA", "<a target=\"_blank\" href=\"http://regionalaccess.net/\">Regional Access</a>")
+			} else if (subInfo.indexOf("LFFC") > -1) {
 				subInfo = subInfo.replace("LFFC", "<a target=\"_blank\" href=\"https://www.lancasterfarmfresh.com\">Lancaster Farm Fresh Coop</a>")
 			} else if (subInfo.indexOf("MYVT") > -1) {
 				subInfo = subInfo.replace("MYVT", "<a target=\"_blank\" href=\"http://www.myersproduce.com\">Myers Produce</a>")
+			} else if (subInfo.indexOf("FLNY") > -1) {
+				subInfo = subInfo.replace("FLNY", "<a target=\"_blank\" href=\"http://www.ilovenyfarms.com/\">Fingerlakes Farms</a>")
 			} else if (subInfo.indexOf("Stryker Farm") > -1) {
 				subInfo = subInfo.replace("Stryker Farm", "<a target=\"_blank\" href=\"https://www.strykerfarm.com\">Stryker Farm</a>")
 			} else if (subInfo.indexOf("Sunbeam") > -1) {
@@ -124,7 +130,13 @@ var loadfooditems = function() {
 				subInfo = subInfo.replace("Inti", "<a target=\"_blank\" href=\"http://www.theintigroup.com\">Inti</a>")
 			} else if (subInfo.indexOf("Hot Bread Kitchen") > -1) {
 				subInfo = subInfo.replace("Hot Bread Kitchen", "<a target=\"_blank\" href=\"https://hotbreadkitchen.org\">Hot Bread Kitchen</a>")
-			}				
+			} else if (subInfo.indexOf("IPM") > -1) {
+				subInfo = subInfo.replace("IPM", "Integrated Pest Management")
+			} else if (subInfo.indexOf("UNFI") > -1) {
+				subInfo = subInfo.replace("UNFI", "<a target=\"_blank\" href=\"https://www.unfi.com/\">United Natural Foods</a>")
+			} else if (subInfo.indexOf("WFN") > -1) {
+				subInfo = subInfo.replace("WFN", "<a target=\"_blank\" href=\"https://wildernessfamilynaturals.com\">Wildly Organic</a>")
+			}	
 
 			// Set the subinfo and prices.
 			o.find('itemname').html(name + "<subinfo>" + subInfo + "<subinfo>")

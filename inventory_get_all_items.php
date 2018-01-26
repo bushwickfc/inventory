@@ -20,7 +20,7 @@ function get_all_items($con) {
     // Get all the products that are not a fee or discontinued.
 	$res = mysqli_query($con, "SELECT PRODUCTS.name, PRODUCTS.pricebuy, PRODUCTS.category AS category_id  "
 		. "FROM PRODUCTS INNER JOIN PRODUCTS_CAT ON PRODUCTS.id = PRODUCTS_CAT.product  "
-		. "WHERE PRODUCTS.category <> '031' AND PRODUCTS.category <> '393d6fad-b9dd-4ff2-8a4b-489145514e4d' ");
+		. "WHERE PRODUCTS.category <> '031' AND PRODUCTS.category <> '393d6fad-b9dd-4ff2-8a4b-489145514e4d' ORDER BY PRODUCTS.name");
 
     setlocale(LC_MONETARY, 'en_US');
     

@@ -4,7 +4,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="inventory.css" rel="stylesheet" type="text/css">
-<link rel="shortcut icon" href="http://bushwickfoodcoop.org/wp-content/themes/bushwick-food-coop/img/favicon.ico">
+<link rel="shortcut icon" href="https://www.bushwickfoodcoop.org/favicon.ico">
 <script>
 
 // The general structure is a list of categories on the left and a list of products on the right.
@@ -12,6 +12,12 @@
 // When a category is selected or the user searches, we add the matching rows to the visible container 
 // ("items"). This allows us to keep the alternating background colors functioning. 
 
+var sort = function(a, b) {
+	var attrA = a.getAttribute('name'),
+		attrB = b.getAttribute('name');
+
+	return (attrA < attrB) ? -1 : (attrA > attrB) ? 1 : 0;
+}
 
 // Called when the user types into the search field. 
 // Gets reset when the user clicks on a category.
@@ -23,8 +29,9 @@ function search() {
     	return
     }
 
-    // Move all rows but the headline to the hidden "allitems" container.
-	$('itemrow').not('.headline').appendTo('allitems')
+    // Sort all rows but the headline and move them to the hidden "allitems" container.
+	var items = $('itemrow').not('headline').sort(sort)
+	$.each(items, function(idx, itm) { $('allitems').append(itm); });
 
 	// Remove any highlight from the category list.
 	$('category').removeClass('selected')
@@ -50,8 +57,9 @@ var categoryclick = function(categoryrow) {
 	$('category').removeClass('selected')
 	categoryrow.addClass('selected')
 
-	// Move all rows but the headline to the hidden "allitems" container.
-	$('itemrow').not('.headline').appendTo('allitems')
+	// Sort all rows but the headline and move them to the hidden "allitems" container.
+	var items = $('itemrow').not('headline').sort(sort)
+	$.each(items, function(idx, itm) { $('allitems').append(itm); });
 
 	// Move all matching rows into the visible "items" container.
 	$("[category_id = " + categoryrow.attr('id') + "]").appendTo('items')
@@ -80,6 +88,8 @@ var loadfooditems = function() {
 
 			// Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
 			name = foods[i].name
+			o.attr('name', name.toUpperCase())
+
 			subInfo = ""
 			if (foods[i].name.indexOf("\/") > -1) {
 				name = foods[i].name.substr(0, foods[i].name.indexOf("\/")); 
@@ -147,6 +157,7 @@ var loadfooditems = function() {
 		// Select the first category as a default on load.
 		categoryclick($('category:first'))
 	});
+
 }
 
 // Called when the DOM is ready. Loads all categories from the database.

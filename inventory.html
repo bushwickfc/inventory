@@ -30,14 +30,14 @@ function search() {
     }
 
     // Sort all rows but the headline and move them to the hidden "allitems" container.
-	var items = $('itemrow').not('headline').sort(sort)
+	var items = $('itemrow').not('.headline').sort(sort)
 	$.each(items, function(idx, itm) { $('allitems').append(itm); });
 
 	// Remove any highlight from the category list.
 	$('category').removeClass('selected')
 
 	// Loop over all products and move the matching ones to the visible "items" container.
-	$('itemrow').each(function( index ) {
+	$('itemrow').not('.headline').each(function( index ) {
   		product_name = $(this).find('itemname').text().toUpperCase()
   		if (product_name.toUpperCase().indexOf(input) > -1) {
   			$(this).appendTo('items')
@@ -58,7 +58,7 @@ var categoryclick = function(categoryrow) {
 	categoryrow.addClass('selected')
 
 	// Sort all rows but the headline and move them to the hidden "allitems" container.
-	var items = $('itemrow').not('headline').sort(sort)
+	var items = $('itemrow').not('.headline').sort(sort)
 	$.each(items, function(idx, itm) { $('allitems').append(itm); });
 
 	// Move all matching rows into the visible "items" container.

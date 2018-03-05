@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<head>
-<title>Inventory - Bushwick Food Coop</title>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link href="inventory.css" rel="stylesheet" type="text/css">
-<link rel="shortcut icon" href="https://www.bushwickfoodcoop.org/favicon.ico">
-<script>
-
 // The general structure is a list of categories on the left and a list of products on the right.
 // We load all products when the page is loaded and add them to a hidden container ("allitems").
 // When a category is selected or the user searches, we add the matching rows to the visible container 
@@ -22,14 +13,14 @@ var sort = function(a, b) {
 // Called when the user types into the search field. 
 // Gets reset when the user clicks on a category.
 function search() {
-    input = $('#searchfield')[0].value.toUpperCase()
+	input = $('#searchfield')[0].value.toUpperCase()
 
-    if (input == "") {
-    	categoryclick($('category:first'))
-    	return
-    }
+	if (input == "") {
+		categoryclick($('category:first'))
+		return
+	}
 
-    // Sort all rows but the headline and move them to the hidden "allitems" container.
+	// Sort all rows but the headline and move them to the hidden "allitems" container.
 	var items = $('itemrow').not('.headline').sort(sort)
 	$.each(items, function(idx, itm) { $('allitems').append(itm); });
 
@@ -38,10 +29,10 @@ function search() {
 
 	// Loop over all products and move the matching ones to the visible "items" container.
 	$('itemrow').not('.headline').each(function( index ) {
-  		product_name = $(this).find('itemname').text().toUpperCase()
-  		if (product_name.toUpperCase().indexOf(input) > -1) {
-  			$(this).appendTo('items')
-  		} 
+		product_name = $(this).find('itemname').text().toUpperCase()
+		if (product_name.toUpperCase().indexOf(input) > -1) {
+			$(this).appendTo('items')
+		} 
 	})
 
 	// Update the headline with the current search term.
@@ -70,14 +61,14 @@ var categoryclick = function(categoryrow) {
 
 // Called when the DOM is ready. Loads all food items from the database.
 var loadfooditems = function() {
-	$.post("inventory_get_all_items.php", {
+	$.post("../php/inventory_get_all_items.php", {
 	},
 	function(data, status) {
-    	$('items').empty()
-    	foods = $.parseJSON(data);
-    	
-    	// Create the headline row.
-    	category = $('itemheader itemrow').clone().appendTo($('items')).addClass('headline')
+		$('items').empty()
+		foods = $.parseJSON(data);
+		
+		// Create the headline row.
+		category = $('itemheader itemrow').clone().appendTo($('items')).addClass('headline')
 
 		// Loop over the food items and add one row per item.
 		$.each(foods, function (i, value) {
@@ -93,7 +84,7 @@ var loadfooditems = function() {
 			subInfo = ""
 			if (foods[i].name.indexOf("\/") > -1) {
 				name = foods[i].name.substr(0, foods[i].name.indexOf("\/")); 
-            	subInfo = foods[i].name.substr(foods[i].name.indexOf("\/") + 1);
+				subInfo = foods[i].name.substr(foods[i].name.indexOf("\/") + 1);
 			}
 
 			if (name.indexOf("BY WEIGHT") > -1) {
@@ -162,15 +153,15 @@ var loadfooditems = function() {
 
 // Called when the DOM is ready. Loads all categories from the database.
 var loadcategories = function() {
-	$.post("inventory_get_categories.php", {
+	$.post("../php/inventory_get_categories.php", {
 	},
 	function(data, status) {
 		categories = $.parseJSON(data);
 		$.each(categories, function (i, value) {
-  			cat = $('<category>').appendTo($('left')).html(value['name'])
-  			cat.attr('id',  value['id'])
+			cat = $('<category>').appendTo($('left')).html(value['name'])
+			cat.attr('id',  value['id'])
 			cat.mousedown(function() {
-    			categoryclick($(this))
+				categoryclick($(this))
 			});
 		});
 	});
@@ -184,41 +175,3 @@ $(document).ready(function() {
 	// Load all the items from the database.
 	loadfooditems()
 })
-</script>
-</head>
-
-<body>
-
-<main>
-	<left>
-		<div class="header">
-			<div class="logoimage">
-				<a href="http://bushwickfoodcoop.org">
-				<img src="//static1.squarespace.com/static/5a54f5ccd74cff1c818ca40e/t/5a5fbea28165f51098cc9953/1516513105858/?format=100w">
-				</a>
-				<h1>Inventory</h1>
-			</div>
-			<input type="text" id="searchfield" onkeyup="search()" placeholder="Search for products...">
-		</div>
-	</left>
-	<right>
-		<items>
-		</items>
-		<allitems>
-		</allitems>
-	</right>
-	
-	
-	<hidden>
-	<itemheader>
-		<itemrow>
-			<itemname> </itemname>
-			<itemprice class="p1">Members</itemprice>
-			<itemprice class="p2">Non-members</itemprice>
-		</itemrow>
-	</itemheader>
-	</hidden>
-</main>
-
-</body>
-</html>

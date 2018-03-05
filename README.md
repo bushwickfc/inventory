@@ -1,2 +1,3 @@
 # inventory
-Code for the inventory website
+
+The Bushwick Food Coop inventory app.

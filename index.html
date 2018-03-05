@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+	<title>Inventory - Bushwick Food Coop</title>
+	<link href="styles/main.css" rel="stylesheet" type="text/css">
+	<link rel="shortcut icon" href="https://www.bushwickfoodcoop.org/favicon.ico">
+</head>
+<body>
+	<main>
+		<left>
+			<div class="header">
+				<div class="logoimage">
+					<a href="http://bushwickfoodcoop.org">
+						<img src="//static1.squarespace.com/static/5a54f5ccd74cff1c818ca40e/t/5a5fbea28165f51098cc9953/1516513105858/?format=100w">
+					</a>
+					<h1>Inventory</h1>
+				</div>
+				<input type="text" id="searchfield" onkeyup="search()" placeholder="Search for products...">
+			</div>
+		</left>
+		<right>
+			<items></items>
+			<allitems></allitems>
+		</right>
+		<hidden>
+			<itemheader>
+				<itemrow>
+					<itemname></itemname>
+					<itemprice class="p1">Members</itemprice>
+					<itemprice class="p2">Non-members</itemprice>
+				</itemrow>
+			</itemheader>
+		</hidden>
+	</main>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="scripts/main.js"></script>
+</body>
+</html>

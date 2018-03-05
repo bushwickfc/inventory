@@ -1,4 +1,5 @@
 .DS_Store
+node_modules/
 fonts/Museo/museo-500.eot
 fonts/Museo/museo-500.svg
 fonts/Museo/museo-500.ttf

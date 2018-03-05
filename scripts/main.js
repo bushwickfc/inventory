@@ -14,17 +14,15 @@ function sort(a, b) {
 
 // Called when the user types into the search field.
 // Gets reset when the user clicks on a category.
-function search() {
-  input = $('#searchfield')[0].value.toUpperCase();
-
+function search(input) {
   if (input === '') {
     categoryclick($('category:first'));
     return;
   }
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
-  var items = $('itemrow').not('.headline').sort(sort)
-  $.each(items, function(idx, itm) { $('allitems').append(itm); });
+  var items = $('itemrow').not('.headline').sort(sort);
+  $.each(items, function (idx, itm) { $('allitems').append(itm); });
 
   // Remove any highlight from the category list.
   $('category').removeClass('selected');
@@ -42,7 +40,7 @@ function search() {
 }
 
 // Called when the user clicks on a category.
-var categoryclick = function(categoryrow) {
+var categoryclick = function (categoryrow) {
   // Reset the search field
   $('#searchfield')[0].value = '';
 
@@ -154,22 +152,26 @@ var loadfooditems = function() {
 };
 
 // Called when the DOM is ready. Loads all categories from the database.
-var loadcategories = function() {
+var loadcategories = function () {
   $.post('../php/inventory_get_categories.php', {
   },
-  function(data, status) {
+  function (data, status) {
     categories = $.parseJSON(data);
     $.each(categories, function (i, value) {
       const cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
-      cat.mousedown(function() {
+      cat.mousedown(function () {
         categoryclick($(this));
       });
     });
   });
 };
 
-$(document).ready(function() {
+$('#searchfield').keyup((event) => {
+  search(event.target.value);
+});
+
+$(document).ready(() => {
   // Load all the categories from the database and populate the
   // right sidebar with the returned data.
   loadcategories();

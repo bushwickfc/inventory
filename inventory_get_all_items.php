@@ -9,7 +9,7 @@ include 'aux_funcs.php';
 
 $money_format_str = '%(n';
 $member_markup = 1.3;
-$nonmember_markup = 1.85;
+$nonmember_markup = 1.83;
 
 function get_all_items($con) {
     global $money_format_str, $member_markup, $nonmember_markup;

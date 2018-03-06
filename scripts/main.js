@@ -12,11 +12,31 @@ function sort(a, b) {
   return (attrA < attrB) ? -1 : (attrA > attrB) ? 1 : 0;
 }
 
+// Called when the user clicks on a category.
+function categoryClick(categoryRow) {
+  // Reset the search field
+  $('#searchfield')[0].value = '';
+
+  // Highlight none but the selected category.
+  $('category').removeClass('selected');
+  categoryRow.addClass('selected');
+
+  // Sort all rows but the headline and move them to the hidden 'allitems' container.
+  const items = $('itemrow').not('.headline').sort(sort);
+  $.each(items, function (idx, itm) { $('allitems').append(itm); });
+
+  // Move all matching rows into the visible 'items' container.
+  $(`[category_id = ${categoryRow.attr('id')}]`).appendTo('items');
+
+  // Update the headline with the selected category.
+  $('itemrow.headline').find('itemname').html(categoryRow.text());
+}
+
 // Called when the user types into the search field.
 // Gets reset when the user clicks on a category.
 function search(input) {
   if (input === '') {
-    categoryclick($('category:first'));
+    categoryClick($('category:first'));
     return;
   }
 
@@ -28,8 +48,8 @@ function search(input) {
   $('category').removeClass('selected');
 
   // Loop over all products and move the matching ones to the visible 'items' container.
-  $('itemrow').not('.headline').each(function(index) {
-    productName = $(this).find('itemname').text().toUpperCase();
+  $('itemrow').not('.headline').each((index) => {
+    const productName = $(this).find('itemname').text().toUpperCase();
     if (productName.toUpperCase().indexOf(input) > -1) {
       $(this).appendTo('items');
     }
@@ -39,34 +59,12 @@ function search(input) {
   $('itemrow.headline').find('itemname').html(`Search for ${input}`);
 }
 
-// Called when the user clicks on a category.
-var categoryclick = function (categoryrow) {
-  // Reset the search field
-  $('#searchfield')[0].value = '';
-
-  // Highlight none but the selected category.
-  $('category').removeClass('selected');
-  categoryrow.addClass('selected');
-
-  // Sort all rows but the headline and move them to the hidden 'allitems' container.
-  var items = $('itemrow').not('.headline').sort(sort);
-  $.each(items, function(idx, itm) { $('allitems').append(itm); });
-
-  // Move all matching rows into the visible 'items' container.
-  $(`[category_id = ${categoryrow.attr('id')}]`).appendTo('items');
-
-  // Update the headline with the selected category.
-  $('itemrow.headline').find('itemname').html(categoryrow.text());
-};
-
 // Called when the DOM is ready. Loads all food items from the database.
-var loadfooditems = function() {
-  $.post('../php/inventory_get_all_items.php', {
-  },
-  function(data, status) {
+function loadFoodItems() {
+  $.post('../php/inventory_get_all_items.php', {}, (data, status) => {
     $('items').empty();
     foods = $.parseJSON(data);
-    
+
     // Create the headline row.
     category = $('itemheader itemrow').clone().appendTo($('items')).addClass('headline');
 
@@ -140,28 +138,25 @@ var loadfooditems = function() {
       }
 
       // Set the subinfo and prices.
-      o.find('itemname').html(name + `<subinfo>${subInfo}<subinfo>`);
+      o.find('itemname').html(`${name}<subinfo>${subInfo}<subinfo>`);
       o.find('itemprice.p1').html(foods[i].member_price);
       o.find('itemprice.p2').html(foods[i].nonmember_price);
     });
 
     // Select the first category as a default on load.
-    categoryclick($('category:first'));
+    categoryClick($('category:first'));
   });
-
-};
+}
 
 // Called when the DOM is ready. Loads all categories from the database.
 var loadcategories = function () {
-  $.post('../php/inventory_get_categories.php', {
-  },
-  function (data, status) {
-    categories = $.parseJSON(data);
+  $.post('../php/inventory_get_categories.php', {}, (data) => {
+    const categories = $.parseJSON(data);
     $.each(categories, function (i, value) {
       const cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
       cat.mousedown(function () {
-        categoryclick($(this));
+        categoryClick($(this));
       });
     });
   });
@@ -177,5 +172,5 @@ $(document).ready(() => {
   loadcategories();
 
   // Load all the items from the database.
-  loadfooditems();
+  loadFoodItems();
 });

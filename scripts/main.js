@@ -60,8 +60,8 @@ function search(input) {
 }
 
 // Called when the DOM is ready. Loads all food items from the database.
-function loadFoodItems() {
-  $.post('../php/inventory_get_all_items.php', {}, (data, status) => {
+function loadFoodItems(queryParam) {
+  $.post('../inventory_get_all_items.php', {}, (data, status) => {
     $('items').empty();
     foods = $.parseJSON(data);
 
@@ -143,18 +143,25 @@ function loadFoodItems() {
       o.find('itemprice.p2').html(foods[i].nonmember_price);
     });
 
-    // Select the first category as a default on load.
-    categoryClick($('category:first'));
+    if (queryParam) {
+      // Select the category that reflects the query param
+      categoryClick($(`.category-item[data-query_name='${queryParam}']`));
+    } else {
+      // Select the first category as a default on load.
+      categoryClick($('category:first'));
+    }
   });
 }
 
 // Called when the DOM is ready. Loads all categories from the database.
 var loadcategories = function () {
-  $.post('../php/inventory_get_categories.php', {}, (data) => {
+  $.post('../inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
     $.each(categories, function (i, value) {
       const cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
+      cat.attr('class', 'category-item');
+      cat.attr('data-query_name', value.name.toLowerCase());
       cat.mousedown(function () {
         categoryClick($(this));
       });
@@ -162,15 +169,26 @@ var loadcategories = function () {
   });
 };
 
+function getParameterByName(name) {
+    const url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    const regex = new RegExp("[?]" + name + "(=([^&#]*)|&|#|$)");
+    const results = regex.exec(url);
+    if (!results || !results[2]) return null;
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 $('#searchfield').keyup((event) => {
   search(event.target.value);
 });
 
 $(document).ready(() => {
+  const queryParam = getParameterByName('cat');
+
   // Load all the categories from the database and populate the
-  // right sidebar with the returned data.
+  // left sidebar with the returned data.
   loadcategories();
 
   // Load all the items from the database.
-  loadFoodItems();
+  loadFoodItems(queryParam);
 });

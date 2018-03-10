@@ -39,11 +39,13 @@ function categoryClick(categoryRow) {
 // Gets reset when the user clicks on a category.
 function search(input) {
   const items = $('itemrow').not('.headline').sort(sort);
+  const queryParam = getParameterByName();
+  const queryParamCat = $(`.category-item[data-query_name='${queryParam}']`);
   input = input.toUpperCase();
 
+  // If the input is cleared, restore the list based on the query param (if there is one)
   if (input === '') {
-    categoryClick($('category:first'));
-    return;
+    return queryParam ? categoryClick($(queryParamCat)) : categoryClick($('category:first'));
   }
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.

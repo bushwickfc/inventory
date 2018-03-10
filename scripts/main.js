@@ -14,6 +14,9 @@ function sort(a, b) {
 
 // Called when the user clicks on a category.
 function categoryClick(categoryRow) {
+  // passively update the url query param
+  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(categoryRow[0].dataset.query_name).toLowerCase()}`)
+
   // Reset the search field
   $('#searchfield')[0].value = '';
 
@@ -143,9 +146,15 @@ function loadFoodItems(queryParam) {
       o.find('itemprice.p2').html(foods[i].nonmember_price);
     });
 
-    if (queryParam) {
+    // Check if there's a .category-item with query_name data that matches the query param...
+    const queryParamCat = $(`.category-item[data-query_name='${queryParam}']`);
+
+    // If queryParamCat corresponds to an actual DOM element, 'click' it.
+    // If there is no match (like a param typo), or the user has not provided a param, just 'click' the first
+    // @author darren
+    if (queryParamCat[0]) {
       // Select the category that reflects the query param
-      categoryClick($(`.category-item[data-query_name='${queryParam}']`));
+      categoryClick(queryParamCat);
     } else {
       // Select the first category as a default on load.
       categoryClick($('category:first'));
@@ -154,7 +163,7 @@ function loadFoodItems(queryParam) {
 }
 
 // Called when the DOM is ready. Loads all categories from the database.
-var loadcategories = function () {
+function loadcategories() {
   $.post('../inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
     $.each(categories, function (i, value) {
@@ -169,13 +178,15 @@ var loadcategories = function () {
   });
 };
 
+// get the value of the 'cat' query param to be passed to loadFoodItems()
+// @author darren
 function getParameterByName(name) {
     const url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
     const regex = new RegExp("[?]" + name + "(=([^&#]*)|&|#|$)");
     const results = regex.exec(url);
     if (!results || !results[2]) return null;
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    return decodeURIComponent(results[2].replace(/\+/g, " ").toLowerCase());
 }
 
 $('#searchfield').keyup((event) => {

@@ -39,6 +39,7 @@ function categoryClick(categoryRow) {
 // Gets reset when the user clicks on a category.
 function search(input) {
   const items = $('itemrow').not('.headline').sort(sort);
+  input = input.toUpperCase();
 
   if (input === '') {
     categoryClick($('category:first'));
@@ -52,8 +53,9 @@ function search(input) {
   $('category').removeClass('selected');
 
   // Loop over all products and move the matching ones to the visible 'items' container.
-  $('itemrow').not('.headline').each(() => {
+  $('itemrow').not('.headline').each(function() {
     const productName = $(this).find('itemname').text().toUpperCase();
+
     if (productName.toUpperCase().indexOf(input) > -1) {
       $(this).appendTo('items');
     }
@@ -188,6 +190,7 @@ function getParameterByName(name = 'cat') {
   return !results || !results[2] ? null : decodeURIComponent(results[2].toLowerCase());
 }
 
+// add the event listener to the search input
 $('#searchfield').keyup((event) => {
   search(event.target.value);
 });

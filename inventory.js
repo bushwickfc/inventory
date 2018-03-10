@@ -12,10 +12,20 @@ function sort(a, b) {
   return (attrA < attrB) ? -1 : (attrA > attrB) ? 1 : 0;
 }
 
+// Passively update the query param value in the url
+function updateUrlQueryParam(queryParamValue) {
+  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(queryParamValue).toLowerCase()}`);
+}
+
+// Find the category-item that corresponds to the current cat query param
+function getQueryParamCat(queryParam) {
+  return $(`.category-item[data-query_name='${queryParam}']`);
+}
+
 // Called when the user clicks on a category.
 function categoryClick(categoryRow) {
-  // passively update the url query param
-  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(categoryRow[0].dataset.query_name).toLowerCase()}`);
+  // Update the query param to match current selection
+  updateUrlQueryParam(categoryRow[0].dataset.query_name);
 
   // Reset the search field
   $('#searchfield')[0].value = '';
@@ -40,7 +50,7 @@ function categoryClick(categoryRow) {
 function search(input) {
   const items = $('itemrow').not('.headline').sort(sort);
   const queryParam = getParameterByName();
-  const queryParamCat = $(`.category-item[data-query_name='${queryParam}']`);
+  const queryParamCat = getQueryParamCat(queryParam);
   input = input.toUpperCase();
 
   // If the input is cleared, restore the list based on the query param (if there is one)
@@ -152,7 +162,7 @@ function loadFoodItems(queryParam) {
     });
 
     // Check if there's a .category-item with query_name data that matches the query param...
-    const queryParamCat = $(`.category-item[data-query_name='${queryParam}']`);
+    const queryParamCat = getQueryParamCat(queryParam);
 
     // If queryParamCat corresponds to an actual DOM element, 'click' it.
     // If there is no match (like a param typo), or the user has not provided a param, just 'click' the first

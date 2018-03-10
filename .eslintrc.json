@@ -3,7 +3,8 @@
   "globals": {
     "$": false,
     "document": false,
-    "foods": false,
-    "subInfo": true
+    "subInfo": true,
+    "window": false,
+    "o": true
   }
 }

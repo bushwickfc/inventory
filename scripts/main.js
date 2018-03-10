@@ -15,7 +15,7 @@ function sort(a, b) {
 // Called when the user clicks on a category.
 function categoryClick(categoryRow) {
   // passively update the url query param
-  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(categoryRow[0].dataset.query_name).toLowerCase()}`)
+  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(categoryRow[0].dataset.query_name).toLowerCase()}`);
 
   // Reset the search field
   $('#searchfield')[0].value = '';
@@ -26,7 +26,7 @@ function categoryClick(categoryRow) {
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
   const items = $('itemrow').not('.headline').sort(sort);
-  $.each(items, function (idx, itm) { $('allitems').append(itm); });
+  $.each(items, (idx, itm) => { $('allitems').append(itm); });
 
   // Move all matching rows into the visible 'items' container.
   $(`[category_id = ${categoryRow.attr('id')}]`).appendTo('items');
@@ -38,20 +38,21 @@ function categoryClick(categoryRow) {
 // Called when the user types into the search field.
 // Gets reset when the user clicks on a category.
 function search(input) {
+  const items = $('itemrow').not('.headline').sort(sort);
+
   if (input === '') {
     categoryClick($('category:first'));
     return;
   }
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
-  var items = $('itemrow').not('.headline').sort(sort);
-  $.each(items, function (idx, itm) { $('allitems').append(itm); });
+  $.each(items, (idx, itm) => { $('allitems').append(itm); });
 
   // Remove any highlight from the category list.
   $('category').removeClass('selected');
 
   // Loop over all products and move the matching ones to the visible 'items' container.
-  $('itemrow').not('.headline').each((index) => {
+  $('itemrow').not('.headline').each(() => {
     const productName = $(this).find('itemname').text().toUpperCase();
     if (productName.toUpperCase().indexOf(input) > -1) {
       $(this).appendTo('items');
@@ -64,28 +65,28 @@ function search(input) {
 
 // Called when the DOM is ready. Loads all food items from the database.
 function loadFoodItems(queryParam) {
-  $.post('../inventory_get_all_items.php', {}, (data, status) => {
-    $('items').empty();
-    foods = $.parseJSON(data);
+  $.post('../inventory_get_all_items.php', {}, (data) => {
+    const foods = $.parseJSON(data);
 
+    $('items').empty();
     // Create the headline row.
-    category = $('itemheader itemrow').clone().appendTo($('items')).addClass('headline');
+    $('itemheader itemrow').clone().appendTo($('items')).addClass('headline');
 
     // Loop over the food items and add one row per item.
-    $.each(foods, function (i, value) {
+    $.each(foods, (i) => {
       // Add one row per item to the hidden 'allitems' container.
       o = $('itemheader itemrow').clone().appendTo($('allitems'));
       // Set the category id as an attribute.
       o.attr('category_id', foods[i].category_id);
 
       // Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
-      name = foods[i].name;
+      let { name } = foods[i];
+      let subInfo = '';
       o.attr('name', name.toUpperCase());
 
-      subInfo = '';
-      if (foods[i].name.indexOf('\/') > -1) {
-        name = foods[i].name.substr(0, foods[i].name.indexOf('\/'));
-        subInfo = foods[i].name.substr(foods[i].name.indexOf('\/') + 1);
+      if (foods[i].name.indexOf('/') > -1) {
+        name = foods[i].name.substr(0, foods[i].name.indexOf('/'));
+        subInfo = foods[i].name.substr(foods[i].name.indexOf('/') + 1);
       }
 
       if (name.indexOf('BY WEIGHT') > -1) {
@@ -98,7 +99,7 @@ function loadFoodItems(queryParam) {
 
       if (name.indexOf('BY FLUID OZ') > -1) {
         name = name.replace('BY FLUID OZ', 'by fluid oz');
-      } else if(name.indexOf('BY FL OZ') > -1) {
+      } else if (name.indexOf('BY FL OZ') > -1) {
         name = name.replace('BY FL OZ', 'by fluid oz');
       }
 
@@ -166,7 +167,7 @@ function loadFoodItems(queryParam) {
 function loadcategories() {
   $.post('../inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
-    $.each(categories, function (i, value) {
+    $.each(categories, (i, value) => {
       const cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
       cat.attr('class', 'category-item');
@@ -176,17 +177,15 @@ function loadcategories() {
       });
     });
   });
-};
+}
 
 // get the value of the 'cat' query param to be passed to loadFoodItems()
 // @author darren
-function getParameterByName(name) {
-    const url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    const regex = new RegExp("[?]" + name + "(=([^&#]*)|&|#|$)");
-    const results = regex.exec(url);
-    if (!results || !results[2]) return null;
-    return decodeURIComponent(results[2].replace(/\+/g, " ").toLowerCase());
+function getParameterByName(name = 'cat') {
+  const url = window.location.href;
+  const regex = new RegExp(`[?]${name}(=([^&#]*)|&|#|$)`);
+  const results = regex.exec(url);
+  return !results || !results[2] ? null : decodeURIComponent(results[2].toLowerCase());
 }
 
 $('#searchfield').keyup((event) => {
@@ -194,7 +193,7 @@ $('#searchfield').keyup((event) => {
 });
 
 $(document).ready(() => {
-  const queryParam = getParameterByName('cat');
+  const queryParam = getParameterByName();
 
   // Load all the categories from the database and populate the
   // left sidebar with the returned data.

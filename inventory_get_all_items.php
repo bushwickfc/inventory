@@ -30,15 +30,15 @@ function get_all_items($con) {
 			continue;
 		}
 
-        $member_price = money_format($money_format_str, $row["pricebuy"] * $member_markup);
-		$nonmember_price = money_format($money_format_str, $row["pricebuy"] * $nonmember_markup);
+        $member_price = money_format($money_format_str, $row['pricebuy'] * $member_markup);
+		$nonmember_price = money_format($money_format_str, $row['pricebuy'] * $nonmember_markup);
         
         // Array representing one item of this category
 		$item = array();
-		$item['name'] = $row["name"];
+		$item['name'] = $row['name'];
 		$item['member_price'] = $member_price;
 		$item['nonmember_price'] = $nonmember_price; 
-        $item['category_id'] = $row["category_id"];
+        $item['category_id'] = $row['category_id'];
 		$items[] = $item;
 	}
 

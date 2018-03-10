@@ -4,11 +4,11 @@
 // This is used for the inventory database.
 // @author vera
 
-include "shared.php";
-include "aux_funcs.php";
+include 'shared.php';
+include 'aux_funcs.php';
 
 function process_all_categories($con) {
-	$res = mysqli_query($con, "SELECT id, name FROM CATEGORIES ORDER BY name");
+	$res = mysqli_query($con, 'SELECT id, name FROM CATEGORIES ORDER BY name');
     $categories = array();
 	while ($row = mysqli_fetch_array($res)) {
         $category = array();

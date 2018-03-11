@@ -1,6 +1,6 @@
-
 .DS_Store
-fonts/Museo/museo-500.eot
-fonts/Museo/museo-500.svg
-fonts/Museo/museo-500.ttf
-fonts/Museo/museo-500.woff
+node_modules/
+fonts/
+
+shared.php
+aux_funcs.php

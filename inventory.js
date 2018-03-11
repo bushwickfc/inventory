@@ -79,7 +79,7 @@ function search(input) {
 
 // Called when the DOM is ready. Loads all food items from the database.
 function loadFoodItems(queryParam) {
-  $.post('../inventory_get_all_items.php', {}, (data) => {
+  $.post('./inventory_get_all_items.php', {}, (data) => {
     const foods = $.parseJSON(data);
 
     $('items').empty();
@@ -179,7 +179,7 @@ function loadFoodItems(queryParam) {
 
 // Called when the DOM is ready. Loads all categories from the database.
 function loadcategories() {
-  $.post('../inventory_get_categories.php', {}, (data) => {
+  $.post('./inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
     $.each(categories, (i, value) => {
       const cat = $('<category>').appendTo($('left')).html(value.name);

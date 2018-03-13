@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 // The general structure is a list of categories on the left and a list of products on the right.
 // We load all products when the page is loaded and add them to a hidden container ('allitems').
 // When a category is selected or the user searches, we add the matching rows to the visible container
@@ -14,12 +12,12 @@ function sort(a, b) {
 
 // Passively update the query param value in the url
 function updateUrlQueryParam(queryParamValue) {
-  window.history.pushState({}, '', `inventory.html?cat=${encodeURIComponent(queryParamValue).toLowerCase()}`);
+  window.history.pushState({}, '', 'inventory.html?cat=' + encodeURIComponent(queryParamValue).toLowerCase());
 }
 
 // Find the category-item that corresponds to the current cat query param
 function getQueryParamCat(queryParam) {
-  return $(`.category-item[data-query_name='${queryParam}']`);
+  return $('.category-item[data-query_name=' + '\'' + queryParam + '\'' + ']');
 }
 
 // Called when the user clicks on a category.
@@ -39,7 +37,7 @@ function categoryClick(categoryRow) {
   $.each(items, (idx, itm) => { $('allitems').append(itm); });
 
   // Move all matching rows into the visible 'items' container.
-  $(`[category_id = ${categoryRow.attr('id')}]`).appendTo('items');
+  $('[category_id = ' + categoryRow.attr('id') + ']').appendTo('items');
 
   // Update the headline with the selected category.
   $('itemrow.headline').find('itemname').html(categoryRow.text());
@@ -74,7 +72,7 @@ function search(input) {
   });
 
   // Update the headline with the current search term.
-  $('itemrow.headline').find('itemname').html(`Search for ${input}`);
+  $('itemrow.headline').find('itemname').html('Search for ' + input);
 }
 
 // Called when the DOM is ready. Loads all food items from the database.
@@ -156,7 +154,7 @@ function loadFoodItems(queryParam) {
       }
 
       // Set the subinfo and prices.
-      o.find('itemname').html(`${name}<subinfo>${subInfo}<subinfo>`);
+      o.find('itemname').html(name + '<subinfo>' + subInfo + '<subinfo>');
       o.find('itemprice.p1').html(foods[i].member_price);
       o.find('itemprice.p2').html(foods[i].nonmember_price);
     });
@@ -197,7 +195,7 @@ function loadcategories() {
 // @author darren
 function getParameterByName(name = 'cat') {
   const url = window.location.href;
-  const regex = new RegExp(`[?]${name}(=([^&#]*)|&|#|$)`);
+  const regex = new RegExp('[?]' + name + '(=([^&#]*)|&|#|$)');
   const results = regex.exec(url);
   return !results || !results[2] ? null : decodeURIComponent(results[2].toLowerCase());
 }

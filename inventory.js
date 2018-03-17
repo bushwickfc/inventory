@@ -10,6 +10,17 @@ function sort(a, b) {
   return (attrA < attrB) ? -1 : (attrA > attrB) ? 1 : 0;
 }
 
+// When adjusting prices (such as converting spice units from pounds to ounces)
+// convert a currency string - '$18.12' - to a number - 18.12 - so we can operate on it.
+function convertCurrencyStringToNumber(currencyString) {
+  return Number( currencyString.replace(/[^0-9\.]+/g, ''));
+}
+
+function convertPriceUnit(currencyString, denominator) {
+  const convertedPrice = convertCurrencyStringToNumber(currencyString) / denominator;
+  return '$' + convertedPrice.toFixed(2);
+}
+
 // Passively update the query param value in the url
 function updateUrlQueryParam(queryParamValue) {
   window.history.pushState({}, '', 'inventory.html?cat=' + encodeURIComponent(queryParamValue).toLowerCase());
@@ -87,13 +98,22 @@ function loadFoodItems(queryParam) {
     // Loop over the food items and add one row per item.
     $.each(foods, (i) => {
       // Add one row per item to the hidden 'allitems' container.
-      o = $('itemheader itemrow').clone().appendTo($('allitems'));
+      const o = $('itemheader itemrow').clone().appendTo($('allitems'));
+      // The following three variables are used to convert the names and prices of
+      // teas and spices so that they'll be listed by ounce instead of pound.
+      const spiceRegex = /^Spices,(.)+\(BY POUND\)$/;
+      const teaRegex = /^Tea,(.)+\(BY POUND\)$/;
+      const poundToOunceDenominator = 16;
+
       // Set the category id as an attribute.
       o.attr('category_id', foods[i].category_id);
 
       // Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
       let { name } = foods[i];
       let subInfo = '';
+      let memberPrice = foods[i].member_price;
+      let nonMemberPrice = foods[i].nonmember_price;
+
       o.attr('name', name.toUpperCase());
 
       if (foods[i].name.indexOf('/') > -1) {
@@ -101,8 +121,26 @@ function loadFoodItems(queryParam) {
         subInfo = foods[i].name.substr(foods[i].name.indexOf('/') + 1);
       }
 
+      // Spices and teas should be priced by ounces, rather than pounds.
+      // First, we'll use these regexes to check if the prices need to be adjusted -
+      // all will begin with either 'Spices,' or 'Tea,' and will include '(BY_POUND) '.
+      // Note the trailing space following '(BY_POUND) ' - at the moment, all of the names
+      // that include a weight designation have that trailing space... hence the use of .trim().
+      // Other categories, such as 'Produce (by Pound)' should also be lowercased.
+      if (name.indexOf('BY POUND') > -1 && (spiceRegex).test(name.trim()) || (teaRegex).test(name.trim())) {
+        name = name.replace('BY POUND', 'by ounce');
+        memberPrice = convertPriceUnit(foods[i].member_price, poundToOunceDenominator);
+        nonMemberPrice = convertPriceUnit(foods[i].nonmember_price, poundToOunceDenominator);
+      } else if (name.indexOf('BY POUND') > -1) {
+        name = name.replace('BY POUND', 'by pound');
+      }
+
       if (name.indexOf('BY WEIGHT') > -1) {
         name = name.replace('BY WEIGHT', 'by weight');
+      }
+
+      if (name.indexOf('GALLON') > -1) {
+        name = name.replace('GALLON', 'gallon');
       }
 
       if (name.indexOf('BY EACH') > -1) {
@@ -113,6 +151,8 @@ function loadFoodItems(queryParam) {
         name = name.replace('BY FLUID OZ', 'by fluid oz');
       } else if (name.indexOf('BY FL OZ') > -1) {
         name = name.replace('BY FL OZ', 'by fluid oz');
+      } else if (name.indexOf('FL OZ') > -1) {
+        name = name.replace('FL OZ', 'fluid oz');
       }
 
       if (subInfo.indexOf('ORG') > -1) {
@@ -155,8 +195,8 @@ function loadFoodItems(queryParam) {
 
       // Set the subinfo and prices.
       o.find('itemname').html(name + '<subinfo>' + subInfo + '<subinfo>');
-      o.find('itemprice.p1').html(foods[i].member_price);
-      o.find('itemprice.p2').html(foods[i].nonmember_price);
+      o.find('itemprice.p1').html(memberPrice);
+      o.find('itemprice.p2').html(nonMemberPrice);
     });
 
     // Check if there's a .category-item with query_name data that matches the query param...

@@ -13,11 +13,15 @@ function sort(a, b) {
 // When adjusting prices (such as converting spice units from pounds to ounces)
 // convert a currency string - '$18.12' - to a number - 18.12 - so we can operate on it.
 function convertCurrencyStringToNumber(currencyString) {
-  return Number( currencyString.replace(/[^0-9\.]+/g, ''));
+  return Number(currencyString.replace(/[^0-9\.]+/g, ''));
 }
 
+// Convert a price to reflect a different unit of measure.
 function convertPriceUnit(currencyString, denominator) {
   const convertedPrice = convertCurrencyStringToNumber(currencyString) / denominator;
+  // Ultimately, we want to put our price back into a currency string -
+  // .toFixed(2) will both round to the nearest cent and convert the number to a string,
+  // so just add the '$' and it's business as usual.
   return '$' + convertedPrice.toFixed(2);
 }
 
@@ -88,6 +92,12 @@ function search(input) {
 
 // Called when the DOM is ready. Loads all food items from the database.
 function loadFoodItems(queryParam) {
+  // The following three variables are used to convert the names and prices of
+  // teas and spices so that they'll be listed by ounce instead of pound.
+  const spiceRegex = /^Spices,(.)+\(BY POUND\)$/;
+  const teaRegex = /^Tea,(.)+\(BY POUND\)$/;
+  const poundToOunceDenominator = 16;
+
   $.post('./inventory_get_all_items.php', {}, (data) => {
     const foods = $.parseJSON(data);
 
@@ -99,11 +109,6 @@ function loadFoodItems(queryParam) {
     $.each(foods, (i) => {
       // Add one row per item to the hidden 'allitems' container.
       const o = $('itemheader itemrow').clone().appendTo($('allitems'));
-      // The following three variables are used to convert the names and prices of
-      // teas and spices so that they'll be listed by ounce instead of pound.
-      const spiceRegex = /^Spices,(.)+\(BY POUND\)$/;
-      const teaRegex = /^Tea,(.)+\(BY POUND\)$/;
-      const poundToOunceDenominator = 16;
 
       // Set the category id as an attribute.
       o.attr('category_id', foods[i].category_id);
@@ -111,6 +116,7 @@ function loadFoodItems(queryParam) {
       // Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
       let { name } = foods[i];
       let subInfo = '';
+      // Prices may change, if the item is a particular spice or tea
       let memberPrice = foods[i].member_price;
       let nonMemberPrice = foods[i].nonmember_price;
 
@@ -127,6 +133,7 @@ function loadFoodItems(queryParam) {
       // Note the trailing space following '(BY_POUND) ' - at the moment, all of the names
       // that include a weight designation have that trailing space... hence the use of .trim().
       // Other categories, such as 'Produce (by Pound)' should also be lowercased.
+      // @author darren
       if (name.indexOf('BY POUND') > -1 && (spiceRegex).test(name.trim()) || (teaRegex).test(name.trim())) {
         name = name.replace('BY POUND', 'by ounce');
         memberPrice = convertPriceUnit(foods[i].member_price, poundToOunceDenominator);
@@ -210,13 +217,13 @@ function loadFoodItems(queryParam) {
       categoryClick(queryParamCat);
     } else {
       // Select the first category as a default on load.
-      categoryClick($('category:first'));
+      categoryClick($('category').first());
     }
   });
 }
 
 // Called when the DOM is ready. Loads all categories from the database.
-function loadcategories() {
+function loadcategories(callBack) {
   $.post('./inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
     $.each(categories, (i, value) => {
@@ -228,6 +235,8 @@ function loadcategories() {
         categoryClick($(this));
       });
     });
+
+    return callBack;
   });
 }
 
@@ -250,8 +259,6 @@ $(document).ready(() => {
 
   // Load all the categories from the database and populate the
   // left sidebar with the returned data.
-  loadcategories();
-
-  // Load all the items from the database.
-  loadFoodItems(queryParam);
+  // Load all the items from the database as a callBack.
+  loadcategories(loadFoodItems(queryParam));  
 });

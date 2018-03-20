@@ -30,7 +30,7 @@ function updateUrlQueryParam(queryParamValue) {
   window.history.pushState({}, '', 'inventory.html?cat=' + encodeURIComponent(queryParamValue).toLowerCase());
 }
 
-// Find the category-item that corresponds to the current cat query param
+// Find the category-item DOM element that corresponds to the current cat query param
 function getQueryParamCat(queryParam) {
   return $('.category-item[data-query_name=' + '\'' + queryParam + '\'' + ']');
 }
@@ -66,9 +66,11 @@ function search(input) {
   const queryParamCat = getQueryParamCat(queryParam);
   input = input.toUpperCase();
 
-  // If the input is cleared, restore the list based on the query param (if there is one)
+  // If the input is cleared, restore the list based on the query param (if there is one).
+  // At the moment, we'd always expect there to be a query param, since there's always a category
+  // selected. Keeping the ternary in case that should change, or for unforeseen circumstances.
   if (input === '') {
-    return queryParam ? categoryClick($(queryParamCat)) : categoryClick($('category:first'));
+    return queryParam ? categoryClick($(queryParamCat)) : categoryClick($('category').first());
   }
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
@@ -223,7 +225,7 @@ function loadFoodItems(queryParam) {
 }
 
 // Called when the DOM is ready. Loads all categories from the database.
-function loadcategories(callBack) {
+function loadCategories(queryParam) {
   $.post('./inventory_get_categories.php', {}, (data) => {
     const categories = $.parseJSON(data);
     $.each(categories, (i, value) => {
@@ -236,7 +238,7 @@ function loadcategories(callBack) {
       });
     });
 
-    return callBack;
+    loadFoodItems(queryParam);
   });
 }
 
@@ -259,6 +261,6 @@ $(document).ready(() => {
 
   // Load all the categories from the database and populate the
   // left sidebar with the returned data.
-  // Load all the items from the database as a callBack.
-  loadcategories(loadFoodItems(queryParam));  
+  // queryParam won't be used by loadCategories(), but will be passed on to loadFoodItems()
+  loadCategories(queryParam);  
 });

@@ -206,6 +206,7 @@ function loadFoodItems(queryParam) {
       o.find('itemname').html(name + '<subinfo>' + subInfo + '<subinfo>');
       o.find('itemprice.p1').html(memberPrice);
       o.find('itemprice.p2').html(nonMemberPrice);
+      o.find('.stock').html(foods[i].stock);
     });
 
     // Check if there's a .category-item with query_name data that matches the query param...

@@ -17,12 +17,13 @@ function get_all_items($con) {
     $items = array();
 
     // Get all the products that are not a fee or discontinued.
-    $res = mysqli_query($con, "SELECT PRODUCTS.name, PRODUCTS.pricebuy, PRODUCTS.category AS category_id  "
+    $res = mysqli_query($con, "SELECT PRODUCTS.name, PRODUCTS.pricebuy, PRODUCTS.category AS category_id, s.stock "
         . 'FROM PRODUCTS INNER JOIN PRODUCTS_CAT ON PRODUCTS.id = PRODUCTS_CAT.product  '
+        . 'LEFT JOIN (select SUM(s.UNITS) as stock, s.PRODUCT from STOCKCURRENT s group by s.PRODUCT) s on PRODUCTS.ID = s.PRODUCT '
         . 'WHERE PRODUCTS.category <> "031" AND PRODUCTS.category <> "393d6fad-b9dd-4ff2-8a4b-489145514e4d" ORDER BY PRODUCTS.name');
 
     setlocale(LC_MONETARY, 'en_US');
-    
+
     while ($row = mysqli_fetch_array($res)) {
         // Sort out items that don't have a name, no point in showing them.
         if ($row['name'] == '') {
@@ -31,13 +32,14 @@ function get_all_items($con) {
 
         $member_price = money_format($money_format_str, $row['pricebuy'] * $member_markup);
         $nonmember_price = money_format($money_format_str, $row['pricebuy'] * $nonmember_markup);
-        
+
         // Array representing one item of this category
         $item = array();
         $item['name'] = $row['name'];
         $item['member_price'] = $member_price;
-        $item['nonmember_price'] = $nonmember_price; 
+        $item['nonmember_price'] = $nonmember_price;
         $item['category_id'] = $row['category_id'];
+        $item['stock'] = $row['stock'];
         $items[] = $item;
     }
 

@@ -174,32 +174,62 @@ function loadFoodItems(queryParam) {
 
       if (subInfo.indexOf('RA') > -1) {
         subInfo = subInfo.replace('RA', '<a target=\'_blank\' href=\'http://regionalaccess.net/\'>Regional Access</a>');
-      } else if (subInfo.indexOf('LFFC') > -1) {
+      } 
+      if (subInfo.indexOf('LFFC') > -1) {
         subInfo = subInfo.replace('LFFC', '<a target=\'_blank\' href=\'https://www.lancasterfarmfresh.com\'>Lancaster Farm Fresh Coop</a>');
-      } else if (subInfo.indexOf('MYVT') > -1) {
+      } 
+      if (subInfo.indexOf('MYVT') > -1) {
         subInfo = subInfo.replace('MYVT', '<a target=\'_blank\' href=\'http://www.myersproduce.com\'>Myers Produce</a>');
-      } else if (subInfo.indexOf('FLNY') > -1) {
+      }
+       if (subInfo.indexOf('FLNY') > -1) {
         subInfo = subInfo.replace('FLNY', '<a target=\'_blank\' href=\'http://www.ilovenyfarms.com/\'>Fingerlakes Farms</a>');
-      } else if (subInfo.indexOf('Stryker Farm') > -1) {
+      }
+       if (subInfo.indexOf('Stryker Farm') > -1) {
         subInfo = subInfo.replace('Stryker Farm', '<a target=\'_blank\' href=\'https://www.strykerfarm.com\'>Stryker Farm</a>');
-      } else if (subInfo.indexOf('Sunbeam') > -1) {
+      }
+       if (subInfo.indexOf('Sunbeam') > -1) {
         subInfo = subInfo.replace('Sunbeam', '<a target=\'_blank\' href=\'https://sunbeamcandles.com\'>Sunbeam</a>');
-      } else if (subInfo.indexOf('Frontier') > -1) {
+      }
+       if (subInfo.indexOf('Frontier') > -1) {
         subInfo = subInfo.replace('Frontier', '<a target=\'_blank\' href=\'https://www.frontiercoop.com\'>Frontier</a>');
-      } else if (subInfo.indexOf('Equal Exchange') > -1) {
+      }
+       if (subInfo.indexOf('Equal Exchange') > -1) {
         subInfo = subInfo.replace('Equal Exchange', '<a target=\'_blank\' href=\'http://equalexchange.coop\'>Equal Exchange</a>');
-      } else if (subInfo.indexOf('Bread Alone') > -1) {
+      }
+       if (subInfo.indexOf('Bread Alone') > -1) {
         subInfo = subInfo.replace('Bread Alone', '<a target=\'_blank\' href=\'https://www.breadalone.com\'>Bread Alone</a>');
-      } else if (subInfo.indexOf('Inti') > -1) {
+      }
+      if (subInfo.indexOf('Inti') > -1) {
         subInfo = subInfo.replace('Inti', '<a target=\'_blank\' href=\'http://www.theintigroup.com\'>Inti</a>');
-      } else if (subInfo.indexOf('Hot Bread Kitchen') > -1) {
+      }
+      if (subInfo.indexOf('Hot Bread Kitchen') > -1) {
         subInfo = subInfo.replace('Hot Bread Kitchen', '<a target=\'_blank\' href=\'https://hotbreadkitchen.org\'>Hot Bread Kitchen</a>');
-      } else if (subInfo.indexOf('IPM') > -1) {
+      }
+      if (subInfo.indexOf('IPM') > -1) {
         subInfo = subInfo.replace('IPM', 'Integrated Pest Management');
-      } else if (subInfo.indexOf('UNFI') > -1) {
+      } 
+      if (subInfo.indexOf('UNFI') > -1) {
         subInfo = subInfo.replace('UNFI', '<a target=\'_blank\' href=\'https://www.unfi.com/\'>United Natural Foods</a>');
-      } else if (subInfo.indexOf('WFN') > -1) {
+      }
+      if (subInfo.indexOf('WFN') > -1) {
         subInfo = subInfo.replace('WFN', '<a target=\'_blank\' href=\'https://wildernessfamilynaturals.com\'>Wildly Organic</a>');
+      }
+      if (subInfo.indexOf('STBL') > -1) {
+        subInfo = subInfo.replace('STBL', 'sustainable');
+      }
+      if (subInfo.indexOf('ECO') > -1) {
+        subInfo = subInfo.replace('ECO', 'eco grown');
+      }
+      if (subInfo.indexOf('GAP') > -1) {
+        subInfo = subInfo.replace('GAP', 'gap certified');
+      }if (subInfo.indexOf('IPM') > -1) {
+        subInfo = subInfo.replace('IPM', 'integrated pest management');
+      }
+      if (subInfo.indexOf('BIO') > -1) {
+        subInfo = subInfo.replace('BIO', 'bio dynamic');
+      }
+      if (subInfo.indexOf('FT') > -1) {
+        subInfo = subInfo.replace('FT', 'fair trade');
       }
 
       // Set the subinfo and prices.

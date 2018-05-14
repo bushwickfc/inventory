@@ -49,7 +49,7 @@ function categoryClick(categoryRow) {
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
   const items = $('itemrow').not('.headline').sort(sort);
-  $.each(items, (idx, itm) => { $('allitems').append(itm); });
+  $.each(items, function(idx, itm) { $('allitems').append(itm); });
 
   // Move all matching rows into the visible 'items' container.
   $('[category_id = ' + categoryRow.attr('id') + ']').appendTo('items');
@@ -74,7 +74,7 @@ function search(input) {
   }
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
-  $.each(items, (idx, itm) => { $('allitems').append(itm); });
+  $.each(items, function(idx, itm) { $('allitems').append(itm); });
 
   // Remove any highlight from the category list.
   $('category').removeClass('selected');
@@ -100,7 +100,7 @@ function loadFoodItems(queryParam) {
   const teaRegex = /^Tea,(.)+\(BY POUND\)$/;
   const poundToOunceDenominator = 16;
 
-  $.post('./inventory_get_all_items.php', {}, (data) => {
+  $.post('./inventory_get_all_items.php', {}, function(data) {
     const foods = $.parseJSON(data);
 
     $('items').empty();
@@ -108,7 +108,7 @@ function loadFoodItems(queryParam) {
     $('itemheader itemrow').clone().appendTo($('items')).addClass('headline');
 
     // Loop over the food items and add one row per item.
-    $.each(foods, (i) => {
+    $.each(foods, function(i) {
       // Add one row per item to the hidden 'allitems' container.
       const o = $('itemheader itemrow').clone().appendTo($('allitems'));
 
@@ -256,9 +256,9 @@ function loadFoodItems(queryParam) {
 
 // Called when the DOM is ready. Loads all categories from the database.
 function loadCategories(queryParam) {
-  $.post('./inventory_get_categories.php', {}, (data) => {
+  $.post('./inventory_get_categories.php', {}, function(data) {
     const categories = $.parseJSON(data);
-    $.each(categories, (i, value) => {
+    $.each(categories, function(i, value) {
       const cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
       cat.attr('class', 'category-item');
@@ -282,11 +282,11 @@ function getParameterByName(name = 'cat') {
 }
 
 // add the event listener to the search input
-$('#searchfield').keyup((event) => {
+$('#searchfield').keyup(function(event) {
   search(event.target.value);
 });
 
-$(document).ready(() => {
+$(document).ready(function() {
   const queryParam = getParameterByName();
 
   // Load all the categories from the database and populate the

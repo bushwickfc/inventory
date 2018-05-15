@@ -4,8 +4,8 @@
 // ('items'). This allows us to keep the alternating background colors functioning.
 
 function sort(a, b) {
-  const attrA = a.getAttribute('name');
-  const attrB = b.getAttribute('name');
+  var attrA = a.getAttribute('name');
+  var attrB = b.getAttribute('name');
 
   return (attrA < attrB) ? -1 : (attrA > attrB) ? 1 : 0;
 }
@@ -18,7 +18,7 @@ function convertCurrencyStringToNumber(currencyString) {
 
 // Convert a price to reflect a different unit of measure.
 function convertPriceUnit(currencyString, denominator) {
-  const convertedPrice = convertCurrencyStringToNumber(currencyString) / denominator;
+  var convertedPrice = convertCurrencyStringToNumber(currencyString) / denominator;
   // Ultimately, we want to put our price back into a currency string -
   // .toFixed(2) will both round to the nearest cent and convert the number to a string,
   // so just add the '$' and it's business as usual.
@@ -48,7 +48,7 @@ function categoryClick(categoryRow) {
   categoryRow.addClass('selected');
 
   // Sort all rows but the headline and move them to the hidden 'allitems' container.
-  const items = $('itemrow').not('.headline').sort(sort);
+  var items = $('itemrow').not('.headline').sort(sort);
   $.each(items, function(idx, itm) { $('allitems').append(itm); });
 
   // Move all matching rows into the visible 'items' container.
@@ -61,9 +61,9 @@ function categoryClick(categoryRow) {
 // Called when the user types into the search field.
 // Gets reset when the user clicks on a category.
 function search(input) {
-  const items = $('itemrow').not('.headline').sort(sort);
-  const queryParam = getParameterByName();
-  const queryParamCat = getQueryParamCat(queryParam);
+  var items = $('itemrow').not('.headline').sort(sort);
+  var queryParam = getParameterByName();
+  var queryParamCat = getQueryParamCat(queryParam);
   input = input.toUpperCase();
 
   // If the input is cleared, restore the list based on the query param (if there is one).
@@ -81,7 +81,7 @@ function search(input) {
 
   // Loop over all products and move the matching ones to the visible 'items' container.
   $('itemrow').not('.headline').each(function() {
-    const productName = $(this).find('itemname').text().toUpperCase();
+    var productName = $(this).find('itemname').text().toUpperCase();
 
     if (productName.toUpperCase().indexOf(input) > -1) {
       $(this).appendTo('items');
@@ -96,12 +96,12 @@ function search(input) {
 function loadFoodItems(queryParam) {
   // The following three variables are used to convert the names and prices of
   // teas and spices so that they'll be listed by ounce instead of pound.
-  const spiceRegex = /^Spices,(.)+\(BY POUND\)$/;
-  const teaRegex = /^Tea,(.)+\(BY POUND\)$/;
-  const poundToOunceDenominator = 16;
+  var spiceRegex = /^Spices,(.)+\(BY POUND\)$/;
+  var teaRegex = /^Tea,(.)+\(BY POUND\)$/;
+  var poundToOunceDenominator = 16;
 
   $.post('./inventory_get_all_items.php', {}, function(data) {
-    const foods = $.parseJSON(data);
+    var foods = $.parseJSON(data);
 
     $('items').empty();
     // Create the headline row.
@@ -110,17 +110,17 @@ function loadFoodItems(queryParam) {
     // Loop over the food items and add one row per item.
     $.each(foods, function(i) {
       // Add one row per item to the hidden 'allitems' container.
-      const o = $('itemheader itemrow').clone().appendTo($('allitems'));
+      var o = $('itemheader itemrow').clone().appendTo($('allitems'));
 
       // Set the category id as an attribute.
       o.attr('category_id', foods[i].category_id);
 
       // Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
-      let name = foods[i]["name"];
-      let subInfo = '';
+      var name = foods[i]["name"];
+      var subInfo = '';
       // Prices may change, if the item is a particular spice or tea
-      let memberPrice = foods[i].member_price;
-      let nonMemberPrice = foods[i].nonmember_price;
+      var memberPrice = foods[i].member_price;
+      var nonMemberPrice = foods[i].nonmember_price;
 
       o.attr('name', name.toUpperCase());
 
@@ -239,7 +239,7 @@ function loadFoodItems(queryParam) {
     });
 
     // Check if there's a .category-item with query_name data that matches the query param...
-    const queryParamCat = getQueryParamCat(queryParam);
+    var queryParamCat = getQueryParamCat(queryParam);
 
     // If queryParamCat corresponds to an actual DOM element, 'click' it.
     // If there is no match (like a param typo), or the user has not provided a param, just 'click' the first
@@ -257,9 +257,9 @@ function loadFoodItems(queryParam) {
 // Called when the DOM is ready. Loads all categories from the database.
 function loadCategories(queryParam) {
   $.post('./inventory_get_categories.php', {}, function(data) {
-    const categories = $.parseJSON(data);
+    var categories = $.parseJSON(data);
     $.each(categories, function(i, value) {
-      const cat = $('<category>').appendTo($('left')).html(value.name);
+      var cat = $('<category>').appendTo($('left')).html(value.name);
       cat.attr('id', value.id);
       cat.attr('class', 'category-item');
       cat.attr('data-query_name', value.name.toLowerCase());
@@ -275,9 +275,9 @@ function loadCategories(queryParam) {
 // get the value of the 'cat' query param to be passed to loadFoodItems()
 // @author darren
 function getParameterByName(name = 'cat') {
-  const url = window.location.href;
-  const regex = new RegExp('[?]' + name + '(=([^&#]*)|&|#|$)');
-  const results = regex.exec(url);
+  var url = window.location.href;
+  var regex = new RegExp('[?]' + name + '(=([^&#]*)|&|#|$)');
+  var results = regex.exec(url);
   return !results || !results[2] ? null : decodeURIComponent(results[2].toLowerCase());
 }
 
@@ -287,7 +287,7 @@ $('#searchfield').keyup(function(event) {
 });
 
 $(document).ready(function() {
-  const queryParam = getParameterByName();
+  var queryParam = getParameterByName();
 
   // Load all the categories from the database and populate the
   // left sidebar with the returned data.

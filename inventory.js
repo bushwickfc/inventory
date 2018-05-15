@@ -274,9 +274,9 @@ function loadCategories(queryParam) {
 
 // get the value of the 'cat' query param to be passed to loadFoodItems()
 // @author darren
-function getParameterByName(name = 'cat') {
+function getParameterByName() {
   var url = window.location.href;
-  var regex = new RegExp('[?]' + name + '(=([^&#]*)|&|#|$)');
+  var regex = new RegExp('[?]cat(=([^&#]*)|&|#|$)');
   var results = regex.exec(url);
   return !results || !results[2] ? null : decodeURIComponent(results[2].toLowerCase());
 }
@@ -287,7 +287,7 @@ $('#searchfield').keyup(function(event) {
 });
 
 $(document).ready(function() {
-  var queryParam = getParameterByName();
+  var queryParam = getParameterByName('');
 
   // Load all the categories from the database and populate the
   // left sidebar with the returned data.

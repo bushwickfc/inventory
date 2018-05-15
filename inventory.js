@@ -116,7 +116,7 @@ function loadFoodItems(queryParam) {
       o.attr('category_id', foods[i].category_id);
 
       // Format the name and info. We reformat some all uppercase parts and replace acronyms with their full words.
-      let { name } = foods[i];
+      let name = foods[i].name;
       let subInfo = '';
       // Prices may change, if the item is a particular spice or tea
       let memberPrice = foods[i].member_price;

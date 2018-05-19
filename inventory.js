@@ -228,6 +228,9 @@ function loadFoodItems(queryParam) {
       if (subInfo.indexOf('BIO') > -1) {
         subInfo = subInfo.replace('BIO', 'bio dynamic');
       }
+      if (subInfo.indexOf('FTNY') > -1) {
+        subInfo = subInfo.replace('FTNY', 'Farms to Table NY');
+      }
       if (subInfo.indexOf('FT') > -1) {
         subInfo = subInfo.replace('FT', 'fair trade');
       }

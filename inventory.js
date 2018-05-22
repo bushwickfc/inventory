@@ -184,6 +184,9 @@ function loadFoodItems(queryParam) {
        if (subInfo.indexOf('FLNY') > -1) {
         subInfo = subInfo.replace('FLNY', '<a target=\'_blank\' href=\'http://www.ilovenyfarms.com/\'>Fingerlakes Farms</a>');
       }
+       if (subInfo.indexOf('HVNY') > -1) {
+        subInfo = subInfo.replace('HVNY', '<a target=\'_blank\' href=\'https://hv-harvest.com/\'>Hudson Valley Harvest New York</a>');
+      }
        if (subInfo.indexOf('Stryker Farm') > -1) {
         subInfo = subInfo.replace('Stryker Farm', '<a target=\'_blank\' href=\'https://www.strykerfarm.com\'>Stryker Farm</a>');
       }

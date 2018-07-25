@@ -237,6 +237,9 @@ function loadFoodItems(queryParam) {
       if (subInfo.indexOf('FT') > -1) {
         subInfo = subInfo.replace('FT', 'fair trade');
       }
+      if (subInfo.indexOf('RF') > -1) {
+        subInfo = subInfo.replace('RF', '<a target=\'_blank\' href=\'http://rainforestdistribution.com\'>Rainforest Distribution</a>');
+      }
 
       // Set the subinfo and prices.
       o.find('itemname').html(name + '<subinfo>' + subInfo + '<subinfo>');
